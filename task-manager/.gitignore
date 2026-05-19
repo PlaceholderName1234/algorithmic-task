@@ -42,3 +42,13 @@ build/
 ../Port/
 ../Trash/
 ../concurrency/
+../Projects/
+../second-example/
+../Shapes/
+../third/
+
+*.iml
+*.jar
+*.class
+**/.idea
+*.MF
