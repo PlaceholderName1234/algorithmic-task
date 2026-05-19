@@ -1,6 +1,9 @@
 package validator;
 
-import annotations.Validate;
+import annotations.Max;
+import annotations.Min;
+import annotations.NotEmpty;
+import annotations.NotNull;
 import model.Order;
 
 import java.lang.reflect.Field;
@@ -13,40 +16,49 @@ public class OrderValidator {
         List<String> errors = new ArrayList<>();
 
         for (Field field : Order.class.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Validate.class)) {
-                Validate validate = field.getAnnotation(Validate.class);
-                field.setAccessible(true);
+            field.setAccessible(true);
 
-                try {
-                    Object value = field.get(order);
+            try {
+                Object value = field.get(order);
 
-                    if (validate.notNull() && value == null) {
-                        String message = validate.message().isEmpty()
-                                ? "Поле " + field.getName() + " не может быть null"
-                                : validate.message();
-                        errors.add(message);
+                if (field.isAnnotationPresent(NotNull.class)) {
+                    NotNull notNull = field.getAnnotation(NotNull.class);
+                    if (value == null) {
+                        errors.add(notNull.message());
                     }
-
-                    if (validate.notEmpty() && value instanceof String strValue && strValue.trim().isEmpty()) {
-                        String message = validate.message().isEmpty()
-                                ? "Поле " + field.getName() + " не может быть пустым"
-                                : validate.message();
-                        errors.add(message);
-                    }
-
-                    if (value instanceof Number numberValue) {
-                        int intValue = numberValue.intValue();
-                        if (intValue < validate.min()) {
-                            errors.add("Поле " + field.getName() + " должно быть не меньше " + validate.min());
-                        }
-                        if (intValue > validate.max()) {
-                            errors.add("Поле " + field.getName() + " должно быть не больше " + validate.max());
-                        }
-                    }
-
-                } catch (IllegalAccessException e) {
-                    errors.add("Ошибка валидации поля " + field.getName());
                 }
+
+                if (field.isAnnotationPresent(NotEmpty.class) && value instanceof String strValue) {
+                    NotEmpty notEmpty = field.getAnnotation(NotEmpty.class);
+                    if (strValue.trim().isEmpty()) {
+                        errors.add(notEmpty.message());
+                    }
+                }
+
+                if (field.isAnnotationPresent(Min.class) && value instanceof Number) {
+                    Min min = field.getAnnotation(Min.class);
+                    int intValue = ((Number) value).intValue();
+                    if (intValue < min.value()) {
+                        String message = min.message().isEmpty()
+                                ? "Поле " + field.getName() + " должно быть не меньше " + min.value()
+                                : min.message();
+                        errors.add(message);
+                    }
+                }
+
+                if (field.isAnnotationPresent(Max.class) && value instanceof Number) {
+                    Max max = field.getAnnotation(Max.class);
+                    int intValue = ((Number) value).intValue();
+                    if (intValue > max.value()) {
+                        String message = max.message().isEmpty()
+                                ? "Поле " + field.getName() + " должно быть не больше " + max.value()
+                                : max.message();
+                        errors.add(message);
+                    }
+                }
+
+            } catch (IllegalAccessException e) {
+                errors.add("Ошибка валидации поля " + field.getName());
             }
         }
 

@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface OrderType {
-    String value() default "REGULAR";
+public @interface Min {
+    int value();
+    String message() default "";
 }

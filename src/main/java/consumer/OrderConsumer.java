@@ -26,7 +26,7 @@ public class OrderConsumer implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Consumer '" + name + "' запущен");
+        System.out.println(name + " запущен");
 
         while (running.get()) {
             try {
@@ -37,13 +37,13 @@ public class OrderConsumer implements Runnable {
 
                 var validationErrors = OrderValidator.validate(order);
                 if (!validationErrors.isEmpty()) {
-                    System.err.println("Consumer " + name + ": Ошибка валидации заказа #" +
+                    System.err.println(name + ": Ошибка валидации заказа #" +
                             order.getId() + ": " + validationErrors);
                     order.setStatus("INVALID");
                     continue;
                 }
 
-                System.out.println("Consumer " + name + " начал обработку заказа #" + order.getId() +
+                System.out.println(name + " начал обработку заказа #" + order.getId() +
                         (order.isUrgent() ? " (СРОЧНЫЙ)" : ""));
 
                 long processingTime = order.isUrgent() ?
@@ -57,7 +57,7 @@ public class OrderConsumer implements Runnable {
                 storage.addProcessedOrder(order);
                 ordersProcessed.incrementAndGet();
 
-                System.out.println("Consumer " + name + " завершил обработку заказа #" + order.getId() +
+                System.out.println(name + " завершил обработку заказа #" + order.getId() +
                         " за " + processingTime + " мс");
 
             } catch (InterruptedException e) {
@@ -66,7 +66,7 @@ public class OrderConsumer implements Runnable {
             }
         }
 
-        System.out.println("Consumer '" + name + "' остановлен");
+        System.out.println(name + " остановлен");
     }
 
     public void stop() {

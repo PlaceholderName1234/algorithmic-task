@@ -1,7 +1,6 @@
 package model;
 
-import annotations.OrderType;
-import annotations.Validate;
+import annotations.*;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,21 +19,24 @@ public class Order {
     private static final AtomicLong idGenerator = new AtomicLong(1);
 
     @EqualsAndHashCode.Include
-    @Validate(notNull = true, message = "ID не может быть null")
+    @NotNull(message = "ID не может быть null")
     private Long id;
 
-    @Validate(notNull = true, notEmpty = true, message = "Имя клиента не может быть пустым")
+    @NotNull(message = "Имя клиента не может быть null")
+    @NotEmpty(message = "Имя клиента не может быть пустым")
     private String customerName;
 
-    @Validate(notNull = true, notEmpty = true, message = "Товар не может быть пустым")
+    @NotNull(message = "Товар не может быть null")
+    @NotEmpty(message = "Товар не может быть пустым")
     private String product;
 
-    @Validate(min = 1, max = 100, message = "Количество должно быть от 1 до 100")
+    @Min(1)
+    @Max(100)
     private int quantity;
 
-    @OrderType(urgent = false)
+    @OrderType("REGULAR")
     @Builder.Default
-    private boolean isUrgent = false;
+    private String orderType = "REGULAR";
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -48,8 +50,12 @@ public class Order {
                 .customerName(customerName)
                 .product(product)
                 .quantity(quantity)
-                .isUrgent(isUrgent)
+                .orderType(isUrgent ? "URGENT" : "REGULAR")
                 .status("CREATED")
                 .build();
+    }
+
+    public boolean isUrgent() {
+        return "URGENT".equals(orderType);
     }
 }

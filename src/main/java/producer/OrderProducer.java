@@ -3,6 +3,7 @@ package producer;
 import model.Order;
 import queue.OrderQueue;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,15 +14,15 @@ public class OrderProducer implements Runnable {
     private final Random random = new Random();
     private final AtomicInteger ordersCreated = new AtomicInteger(0);
 
-    private final String[] customers = {
+    private final List<String> customers = List.of(
             "Иванов", "Смирнов", "Кузнецов", "Попов", "Васильев",
             "Петров", "Соколов", "Михайлов", "Новиков", "Федоров"
-    };
+    );
 
-    private final String[] products = {
+    private final List<String> products = List.of(
             "Ноутбук", "Телефон", "Клавиатура", "Мышь", "Монитор",
             "Наушники", "Колонки", "Камера", "Микрофон", "Кресло"
-    };
+    );
 
     public OrderProducer(OrderQueue queue) {
         this.queue = queue;
@@ -33,8 +34,8 @@ public class OrderProducer implements Runnable {
 
         while (running.get()) {
             try {
-                String customer = customers[random.nextInt(customers.length)];
-                String product = products[random.nextInt(products.length)];
+                String customer = customers.get(random.nextInt(customers.size()));
+                String product = products.get(random.nextInt(products.size()));
                 int quantity = random.nextInt(100) + 1;
                 boolean isUrgent = random.nextInt(100) < 20;
 
